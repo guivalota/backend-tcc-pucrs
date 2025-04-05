@@ -1,4 +1,6 @@
 
+using Microsoft.Data.SqlClient;
+
 public class RoleService : IRoleService
 {
     private readonly DatabaseHelper _dbHelper;
@@ -11,38 +13,120 @@ public class RoleService : IRoleService
         _logGeral = logGeral;
         _authService = authService;
     }
-    public void AddRole(Role role)
+    public async void AddRole(Role role)
     {
-        throw new NotImplementedException();
+        var insertQuery = "INSERT INTO Role (Descricao) VALUES (@Descricao)";
+        var insertParams = new[]
+        {
+                    new SqlParameter("@Descricao", role.Descricao)
+                };
+        await _dbHelper.ExecuteCommandAsync(insertQuery, insertParams);
+        _logGeral.AddLogGeral(CreateLog($"Role {role.Descricao} foi adicionada", "Role", 0));
     }
 
-    public void AlterRole(Role role)
+    public async void AlterRole(Role role)
     {
-        throw new NotImplementedException();
+        if (role.Id == 1)
+        {
+            throw new UnauthorizedAccessException("Não é possível alterar a role Admin.");
+        }
+        if (role.Id == 2)
+        {
+            throw new UnauthorizedAccessException("Não é possível alterar a role User.");
+        }
+
+        var updateQuery = "UPDATE Role set Descricao = @Descricao where Id = @Id";
+        var updateParams = new[]
+        {
+            new SqlParameter("@Id", role.Id),
+            new SqlParameter("@Descricao", role.Descricao)
+        };
+        await _dbHelper.ExecuteCommandAsync(updateQuery, updateParams);
+        _logGeral.AddLogGeral(CreateLog($"Role {role.Descricao} foi alterada", "Role", 0));
+    }
+
+    public async void DeleteRole(Role role)
+    {
+        if (role.Id == 1)
+        {
+            throw new UnauthorizedAccessException("Não é possível excluir a role Admin.");
+        }
+        if (role.Id == 2)
+        {
+            throw new UnauthorizedAccessException("Não é possível excluir a role User.");
+        }
+
+        var deleteQuery = "DELETE FROM Role where Id = @Id";
+        var deleteParams = new[]
+        {
+            new SqlParameter("@Id", role.Id)
+        };
+        await _dbHelper.ExecuteCommandAsync(deleteQuery, deleteParams);
+        _logGeral.AddLogGeral(CreateLog($"Role {role.Descricao} foi excluida.", "Role", 0));
+    }
+
+    public async Task<Role?> GetRoleById(int id)
+    {
+        var query = "SELECT Id, Descricao from Role where Id = @Id ";
+        var parameters = new[]
+        {
+                new SqlParameter("@Id", id)
+            };
+        using var reader = await _dbHelper.ExecuteReaderAsync(query, parameters);
+        if (reader.Read())
+        {
+            return new Role
+            {
+                Id = reader.GetInt32(0),
+                Descricao = reader.GetString(1)
+            };
+        }
+        return null;
+    }
+
+    public async Task<Role?> GetRoleByDescricao(string descricao)
+    {
+        var query = "SELECT Id, Descricao from Role where Descricao = @Descricao ";
+        var parameters = new[]
+        {
+                new SqlParameter("@Descricao", descricao)
+            };
+        using var reader = await _dbHelper.ExecuteReaderAsync(query, parameters);
+        if (reader.Read())
+        {
+            return new Role
+            {
+                Id = reader.GetInt32(0),
+                Descricao = reader.GetString(1)
+            };
+        }
+        return null;
+    }
+
+    public async Task<List<Role>> ListRoles()
+    {
+        var retorno = new List<Role>();
+        var query = " SELECT Id, Descricao From Role";
+        using var reader = await _dbHelper.ExecuteReaderAsync(query);
+        while (reader.Read())
+        {
+            retorno.Add(new Role
+            {
+                Id = reader.GetInt32(0),
+                Descricao = reader.GetString(1)
+            });
+        }
+        return retorno;
     }
 
     public LogGeral CreateLog(string message, string tabela, int idUsuario)
     {
-        throw new NotImplementedException();
-    }
+        LogGeral logGeralModel = new LogGeral();
+        logGeralModel.Message = message;
+        logGeralModel.Table = tabela;
+        logGeralModel.IdUsuario = idUsuario;
+        logGeralModel.Data = DateTime.Now;
 
-    public void DeleteRole(Role role)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Role?> GetRoleByDescricao(string descricao)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Role?> GetRoleById(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<Role>> ListRoles()
-    {
-        throw new NotImplementedException();
+        return logGeralModel;
     }
 }

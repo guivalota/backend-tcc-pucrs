@@ -324,8 +324,8 @@ public class AuthService
 
             // 3. Configuração do token
             var tokenDescriptor = new JwtSecurityToken(
-                issuer: _configuration["JwtSettings:Issuer"] ?? "sua-aplicacao", // Emissor do token
-                audience: _configuration["JwtSettings:Audience"] ?? "seus-clientes", // Destinatário do token
+                issuer: _configuration["JwtSettings:Issuer"] ?? "aplicacao", // Emissor do token
+                audience: _configuration["JwtSettings:Audience"] ?? "cliente", // Destinatário do token
                 claims: claims, // Informações contidas no token
                 expires: DateTime.UtcNow.AddMinutes(ExpirationMinutes), // Tempo de expiração
                 signingCredentials: credentials // Credenciais de assinatura

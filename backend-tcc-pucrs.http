@@ -1,0 +1,6 @@
+@backend_tcc_pucrs_HostAddress = http://localhost:5063
+
+GET {{backend_tcc_pucrs_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,58 @@
+## Ignore arquivos de build e do Visual Studio ##
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.cache
+*.pdb
+*.dbmdl
+*.log
+
+## Diretórios do Rider ##
+.idea/
+
+## Configurações locais ##
+appsettings.Development.json
+secrets.json
+
+## Arquivos temporários ##
+*.tmp
+*.temp
+*.bak
+*.swp
+
+## Build do dotnet ##
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Logs ##
+*.log
+
+## Pacotes ##
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+.nuget/
+
+## Configuração do sistema ##
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.DS_Store
+
+## Testes ##
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+## Publicações locais ##
+publish/
+*.Publish.xml
+
+## Ferramentas de dependência ##
+node_modules/
+bower_components/

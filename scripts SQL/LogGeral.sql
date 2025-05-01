@@ -1,0 +1,7 @@
+CREATE TABLE LogGeral (
+    Id BIGINT PRIMARY KEY IDENTITY(1,1),
+    Message NVARCHAR(MAX),
+    TableName NVARCHAR(255),
+    Data DATETIME NOT NULL,
+    IdUsuario INT NOT NULL
+);

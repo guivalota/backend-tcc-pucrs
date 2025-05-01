@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using Backend.TCC.PUCRS.Model;
+using Backend.TCC.PUCRS.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -192,9 +194,8 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpGet("email")]
-    [Route("request-reset-password/{email}")]
-    public async Task<ActionResult> RequestResetPassword(string email)
+    [HttpPost("request-reset-password")]
+    public async Task<ActionResult> RequestResetPassword([FromBody] string email)
     {
         try
         {
@@ -219,9 +220,8 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpGet("token")]
-    [Route("reset-password/{token}")]
-    public ActionResult ResetPassword(string token)
+    [HttpPost("reset-password-token")]
+    public ActionResult ResetPassword([FromBody]string token)
     {
         try
         {

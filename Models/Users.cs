@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
+namespace Backend.TCC.PUCRS.Model;
 public class Users
 {
     [JsonPropertyName("Id")]

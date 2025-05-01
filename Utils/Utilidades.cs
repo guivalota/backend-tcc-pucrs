@@ -1,7 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
+using Backend.TCC.PUCRS.Model;
 namespace Backend.TCC.PUCRS.Utils;
-public class Utils
+public class Utilidades
 {
     public string GeneratePassword(int length)
     {

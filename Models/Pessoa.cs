@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 
+namespace Backend.TCC.PUCRS.Model;
 public class Pessoa
 {
     [JsonPropertyName("Id")]

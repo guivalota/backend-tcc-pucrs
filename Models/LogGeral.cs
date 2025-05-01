@@ -1,3 +1,4 @@
+namespace Backend.TCC.PUCRS.Model;
 public class LogGeral
 {
     public long Id { get; set; }

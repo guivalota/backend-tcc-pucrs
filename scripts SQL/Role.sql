@@ -1,0 +1,4 @@
+CREATE TABLE Role (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Descricao NVARCHAR(255) NOT NULL
+);

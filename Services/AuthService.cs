@@ -1,10 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Backend.TCC.PUCRS.Model;
+using Backend.TCC.PUCRS.Services.Interfaces;
 using Backend.TCC.PUCRS.Utils;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 
+namespace Backend.TCC.PUCRS.Services;
 public class AuthService
     {
         private readonly DatabaseHelper _dbHelper;
@@ -13,11 +16,11 @@ public class AuthService
         private string SecretKey;
         private const int ExpirationMinutes = 5;
         private readonly EmailService _emailService;
-        private readonly Utils _utils;
+        private readonly Utilidades _utils;
 
         private const string host = "http://localhost:5000/api/auth";
 
-        public AuthService(DatabaseHelper dbHelper, IConfiguration configuration, EmailService emailService, ILogGeral logGeral, Utils utils)
+        public AuthService(DatabaseHelper dbHelper, IConfiguration configuration, EmailService emailService, ILogGeral logGeral, Utilidades utils)
         {
             _dbHelper = dbHelper;
             _configuration = configuration;

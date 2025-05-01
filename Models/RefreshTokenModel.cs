@@ -1,3 +1,4 @@
+namespace Backend.TCC.PUCRS.Model;
 public class RefreshTokenModel
 {
     public string? Token { get; set; }

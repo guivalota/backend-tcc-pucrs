@@ -1,3 +1,4 @@
+namespace Backend.TCC.PUCRS.Model;
 public class UsersRecovery
 {
     public int Id { get; set; }

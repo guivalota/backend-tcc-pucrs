@@ -1,3 +1,6 @@
+using Backend.TCC.PUCRS.Model;
+
+namespace Backend.TCC.PUCRS.Services.Interfaces;
 public interface IPessoaService
 {
     Task<Pessoa?> GetPessoaByLoginAsync(string login);

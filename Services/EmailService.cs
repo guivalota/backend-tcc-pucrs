@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Mail;
 
+namespace Backend.TCC.PUCRS.Services;
 public class EmailService
 {
     private readonly string SmtpHost = "";

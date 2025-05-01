@@ -1,3 +1,4 @@
+namespace Backend.TCC.PUCRS.Model;
 public class Cadastro
 {
     public int Id { get; set; }

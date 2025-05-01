@@ -1,15 +1,18 @@
 
-using Backend.TCC.PUCRS.Utils;
+using Backend.TCC.PUCRS.Model;
+using Backend.TCC.PUCRS.Services.Interfaces;
 using Microsoft.Data.SqlClient;
+using Backend.TCC.PUCRS.Utils;
+using Backend.TCC.PUCRS.Services;
 
 public class PessoaService : IPessoaService
 {
     private readonly DatabaseHelper _dbHelper;
     private readonly ILogGeral _logGeral;
     private readonly AuthService _authService;
-    private readonly Utils _utils;
+    private readonly Utilidades _utils;
 
-    public PessoaService(DatabaseHelper dbHelper, ILogGeral logGeral, AuthService authService, Utils utils)
+    public PessoaService(DatabaseHelper dbHelper, ILogGeral logGeral, AuthService authService, Utilidades utils)
     {
         _dbHelper = dbHelper;
         _logGeral = logGeral;

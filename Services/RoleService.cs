@@ -1,4 +1,7 @@
 
+using Backend.TCC.PUCRS.Model;
+using Backend.TCC.PUCRS.Services;
+using Backend.TCC.PUCRS.Services.Interfaces;
 using Microsoft.Data.SqlClient;
 
 public class RoleService : IRoleService

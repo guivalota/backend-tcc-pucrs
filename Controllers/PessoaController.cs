@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using Backend.TCC.PUCRS.Model;
+using Backend.TCC.PUCRS.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

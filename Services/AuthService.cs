@@ -74,7 +74,7 @@ public class AuthService
             await _dbHelper.ExecuteCommandAsync(insertQueryRole, insertParamsRole);
             //Enviar o email para o usuário
             //_emailService.SendEmailAsync(user.Email, "Confirmação de Cadastro", $"Por favor, confirme seu email clicando no link: {host}/verify-email?token={emailVerificationToken}");
-            _emailService.SendEmail2(user.Email, "Confirmação de Cadastro", $"Por favor, confirme seu email clicando no link: {host}/verify-email?token={emailVerificationToken}");
+            //_emailService.SendEmail2(user.Email, "Confirmação de Cadastro", $"Por favor, confirme seu email clicando no link: {host}/verify-email?token={emailVerificationToken}");
             return user;
         }
 
@@ -342,7 +342,7 @@ public class AuthService
         public async Task<List<Users>> ListarUsuarios(string login)
         {
             var retorno = new List<Users>();
-            var query = " SELECT Email, Login, EmailVerified From Users where Login <> @Login";
+            var query = " SELECT Id, Email, Login, EmailVerified From Users where Login <> @Login";
             var parameters = new[] { new SqlParameter("@Login", login) };
 
             using var reader = await _dbHelper.ExecuteReaderAsync(query, parameters);
@@ -350,9 +350,10 @@ public class AuthService
             {
                 retorno.Add(new Users
                 {
-                    Email = reader.GetString(0),
-                    Login = reader.GetString(1),
-                    EmailVerified = reader.GetBoolean(2)
+                    Id = reader.GetInt32(0),
+                    Email = reader.GetString(1),
+                    Login = reader.GetString(2),
+                    EmailVerified = reader.GetBoolean(3)
                 });
             }
             return retorno;

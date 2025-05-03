@@ -318,7 +318,7 @@ public class AuthService
             //Adicionar roles
             foreach (var role in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role.Descricao));
+                claims.Add(new Claim("roles", role.Descricao));
             }
 
             // 2. Geração da chave secreta

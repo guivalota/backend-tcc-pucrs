@@ -7,7 +7,7 @@ public class DatabaseHelper
 
         public DatabaseHelper(IConfiguration configuration)
         {
-            _connectionString = Configuracao.ConnectionString; //configuration.GetConnectionString("DefaultConnection")!;
+            _connectionString = Configuracao.SqlConnectionString; //configuration.GetConnectionString("DefaultConnection")!;
         }
 
         public SqlConnection GetConnection()

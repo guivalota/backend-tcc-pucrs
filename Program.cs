@@ -26,6 +26,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 builder.Services.AddSingleton<DatabaseHelper>();
+builder.Services.AddSingleton<PostgresDatabaseHelper>();
 
 //Configuracao de versionamento
 builder.Services.AddApiVersioning(options =>
@@ -125,8 +126,10 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowFrontend");
 
 // Configuração do pipeline de middleware
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+app.Urls.Add("http://0.0.0.0:5063");
 
 app.Run();

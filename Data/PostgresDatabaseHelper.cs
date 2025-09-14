@@ -15,34 +15,46 @@ public class PostgresDatabaseHelper
         return new NpgsqlConnection(_connectionString);
     }
 
-    public async Task<int> ExecuteCommandAsync(string query, NpgsqlParameter[]? parameters = null)
+    public async Task<int> ExecuteCommandAsync(string query, Dictionary<string, object?>? parameters = null)
     {
         using var connection = GetConnection();
         using var command = new NpgsqlCommand(query, connection);
+
         if (parameters != null)
         {
-            command.Parameters.AddRange(parameters);
+            foreach (var kvp in parameters)
+            {
+                var param = DbParameterHelper.CreateParameter(kvp.Key, kvp.Value);
+                command.Parameters.Add(param);
+            }
         }
+
         await connection.OpenAsync();
         return await command.ExecuteNonQueryAsync();
     }
 
-    public async Task<NpgsqlDataReader> ExecuteReaderAsync(string query, NpgsqlParameter[]? parameters = null)
+    public async Task<NpgsqlDataReader> ExecuteReaderAsync(string query, Dictionary<string, object?>? parameters = null)
     {
         try
         {
             var connection = GetConnection();
             var command = new NpgsqlCommand(query, connection);
+
             if (parameters != null)
             {
-                command.Parameters.AddRange(parameters);
+                foreach (var kvp in parameters)
+                {
+                    var param = DbParameterHelper.CreateParameter(kvp.Key, kvp.Value);
+                    command.Parameters.Add(param);
+                }
             }
+
             await connection.OpenAsync();
             return await command.ExecuteReaderAsync(CommandBehavior.CloseConnection);
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao executar o comando no PostgreSQL: " + ex.Message);
+            throw new Exception("Erro ao executar o comando no PostgreSQL: " + ex.Message, ex);
         }
     }
 }

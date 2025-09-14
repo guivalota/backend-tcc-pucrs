@@ -23,12 +23,12 @@ public class PessoaService : IPessoaService
     public async Task<Pessoa?> AddPessoa(Pessoa pessoa)
     {
         var insertQuery = "INSERT INTO Pessoa (IdUsuario, nome, sobrenome, documento) VALUES (@IdUsuario, @Nome, @Sobrenome, @Documento)";
-        var insertParams = new[]
+        var insertParams = new Dictionary<string, object?>
         {
-                    new SqlParameter("@IdUsuario", pessoa.user!.Id),
-                    new SqlParameter("@Nome", pessoa!.Nome),
-                    new SqlParameter("@Sobrenome", pessoa!.Sobrenome),
-                    new SqlParameter("@Documento", pessoa!.Documento)
+                    {"@IdUsuario", pessoa.user!.Id },
+                    {"@Nome", pessoa!.Nome },
+                    {"@Sobrenome", pessoa!.Sobrenome },
+                    {"@Documento", pessoa!.Documento }
                 };
         await _dbHelper.ExecuteCommandAsync(insertQuery, insertParams);
         return await GetPessoaByLoginAsync(pessoa.user.Login);
@@ -40,9 +40,9 @@ public class PessoaService : IPessoaService
         if (user != null)
         {
             var query = "SELECT Id, nome, sobrenome, documento from Pessoa where IdUsuario = @IdUsuario ";
-            var parameters = new[]
+            var parameters = new Dictionary<string, object?>
             {
-                new SqlParameter("@IdUsuario", user.Id)
+                {"@IdUsuario", user.Id }
             };
             using var reader = await _dbHelper.ExecuteReaderAsync(query, parameters);
             if (reader.Read())
@@ -78,13 +78,13 @@ public class PessoaService : IPessoaService
             if (user != null)
             {
                 var query = "UPDATE Pessoa set nome = @Nome, sobrenome = @Sobrenome, documento = @Documento where Id = @Id and IdUsuario = @IdUsuario ";
-                var parameters = new[]
+                var parameters = new Dictionary<string, object?>
                 {
-                new SqlParameter("@Nome", pessoa.Nome),
-                new SqlParameter("@Sobrenome", pessoa.Sobrenome),
-                new SqlParameter("@Documento", pessoa.Documento),
-                new SqlParameter("@Id", pessoa.Id),
-                new SqlParameter("@IdUsuario", user.Id)
+                {"@Nome", pessoa.Nome },
+                {"@Sobrenome", pessoa.Sobrenome },
+                {"@Documento", pessoa.Documento },
+                {"@Id", pessoa.Id },
+                {"@IdUsuario", user.Id }
             };
                 await _dbHelper.ExecuteCommandAsync(query, parameters);
                 _logGeral.AddLogGeral(_utils.CreateLog($"Usuário {pessoa.user.Login} atualizou as informações pessoais.", "Pessoa", 0));

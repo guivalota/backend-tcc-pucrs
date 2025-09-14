@@ -19,9 +19,9 @@ public class RoleService : IRoleService
     public async void AddRole(Role role)
     {
         var insertQuery = "INSERT INTO Role (Descricao) VALUES (@Descricao)";
-        var insertParams = new[]
+        var insertParams = new Dictionary<string, object?>
         {
-                    new SqlParameter("@Descricao", role.Descricao)
+                    {"@Descricao", role.Descricao }
                 };
         await _dbHelper.ExecuteCommandAsync(insertQuery, insertParams);
         _logGeral.AddLogGeral(CreateLog($"Role {role.Descricao} foi adicionada", "Role", 0));
@@ -39,10 +39,10 @@ public class RoleService : IRoleService
         }
 
         var updateQuery = "UPDATE Role set Descricao = @Descricao where Id = @Id";
-        var updateParams = new[]
+        var updateParams = new Dictionary<string, object?>
         {
-            new SqlParameter("@Id", role.Id),
-            new SqlParameter("@Descricao", role.Descricao)
+            {"@Id", role.Id },
+            {"@Descricao", role.Descricao}
         };
         await _dbHelper.ExecuteCommandAsync(updateQuery, updateParams);
         _logGeral.AddLogGeral(CreateLog($"Role {role.Descricao} foi alterada", "Role", 0));
@@ -60,9 +60,9 @@ public class RoleService : IRoleService
         }
 
         var deleteQuery = "DELETE FROM Role where Id = @Id";
-        var deleteParams = new[]
+        var deleteParams = new Dictionary<string, object?>
         {
-            new SqlParameter("@Id", role.Id)
+            {"@Id", role.Id }
         };
         await _dbHelper.ExecuteCommandAsync(deleteQuery, deleteParams);
         _logGeral.AddLogGeral(CreateLog($"Role {role.Descricao} foi excluida.", "Role", 0));
@@ -71,9 +71,9 @@ public class RoleService : IRoleService
     public async Task<Role?> GetRoleById(int id)
     {
         var query = "SELECT Id, Descricao from Role where Id = @Id ";
-        var parameters = new[]
+        var parameters = new Dictionary<string, object?>
         {
-                new SqlParameter("@Id", id)
+                {"@Id", id }
             };
         using var reader = await _dbHelper.ExecuteReaderAsync(query, parameters);
         if (reader.Read())
@@ -90,9 +90,9 @@ public class RoleService : IRoleService
     public async Task<Role?> GetRoleByDescricao(string descricao)
     {
         var query = "SELECT Id, Descricao from Role where Descricao = @Descricao ";
-        var parameters = new[]
+        var parameters = new Dictionary<string, object?>
         {
-                new SqlParameter("@Descricao", descricao)
+                {"@Descricao", descricao }
             };
         using var reader = await _dbHelper.ExecuteReaderAsync(query, parameters);
         if (reader.Read())

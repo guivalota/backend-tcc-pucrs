@@ -11,7 +11,7 @@ namespace Backend.TCC.PUCRS.Services;
 
 public class AuthService
 {
-    
+
     private readonly IConfiguration _configuration;
     private readonly ILogGeral _logGeral;
     private string SecretKey;
@@ -36,12 +36,12 @@ public class AuthService
     {
         // Verificar se o email ou login já existem
         var checkQuery = "SELECT COUNT(*) FROM Users WHERE Email = @Email OR Login = @Login";
-        var checkParams = new[]
+        var parameters = new Dictionary<string, object?>
         {
-                new Npgsql.NpgsqlParameter("@Email", user.Email),
-                new Npgsql.NpgsqlParameter("@Login", user.Login)
-            };
-        var result = await _postgresDbHelper.ExecuteReaderAsync(checkQuery, checkParams);
+            {"@Email", user.Email },
+            {"@Login", user.Login }
+        };
+        var result = await _postgresDbHelper.ExecuteReaderAsync(checkQuery, parameters);
         if (result.Read() && (int)result[0] > 0)
         {
             throw new Exception("Email ou Login já existe.");
@@ -53,13 +53,13 @@ public class AuthService
         user.EmailVerified = false;
         // Inserir o novo usuário no banco
         var insertQuery = "INSERT INTO Users (Email, Password, Login, EmailVerificationToken, EmailVerified) VALUES (@Email, @Password, @Login, @EmailVerificationToken, @EmailVerified)";
-        var insertParams = new[]
+        var insertParams = new Dictionary<string, object?>
         {
-                new Npgsql.NpgsqlParameter("@Email", user.Email),
-                new Npgsql.NpgsqlParameter("@Password", user.Password),
-                new Npgsql.NpgsqlParameter("@Login", user.Login),
-                new Npgsql.NpgsqlParameter("@EmailVerificationToken", user.EmailVerificationToken),
-                new Npgsql.NpgsqlParameter("@EmailVerified", user.EmailVerified)
+                {"@Email", user.Email },
+                {"@Password", user.Password },
+                {"@Login", user.Login },
+                {"@EmailVerificationToken", user.EmailVerificationToken },
+                {"@EmailVerified", user.EmailVerified }
             };
 
 
@@ -68,10 +68,10 @@ public class AuthService
         Users? newUser = await GetUserByUserNameAsync(user.Login);
         // Inserir a primeira role do usuário com User
         var insertQueryRole = " INSERT INTO Users_Role (IdUser, IdRole) VALUES(@IdUser, @IdRole)";
-        var insertParamsRole = new[]
+        var insertParamsRole = new Dictionary<string, object?>
         {
-                new Npgsql.NpgsqlParameter("@IdUser", newUser!.Id),
-                new Npgsql.NpgsqlParameter("@IdRole", 2)
+                {"@IdUser", newUser!.Id },
+                {"@IdRole", 2 }
             };
         await _postgresDbHelper.ExecuteCommandAsync(insertQueryRole, insertParamsRole);
         //Enviar o email para o usuário
@@ -93,12 +93,10 @@ public class AuthService
     public async Task<string> LoginAsync(string login, string password)
     {
         var query = "SELECT Id, Email, Password, Login, EmailVerified FROM Users WHERE Login = @Login";
-        var parameters = new[]
+        var parameters = new Dictionary<string, object?>
         {
-            //new Npgsql.NpgsqlParameter("@Login", login)
-            new Npgsql.NpgsqlParameter("@Login", login)
-            };
-        //using var reader = await _postgresDbHelper.ExecuteReaderAsync(query, parameters);
+            { "@Login", login },
+        };
         using var reader = await _postgresDbHelper.ExecuteReaderAsync(query, parameters);
         if (!reader.Read())
         {
@@ -135,11 +133,11 @@ public class AuthService
     private async Task<bool> BloqueVerify(int idUsuario)
     {
         var query = "SELECT 1 FROM UsersBloqued WHERE IdUser = @IdUser and IsBloqued = @IsBloqued";
-        var parameters = new[]
+        var parameters = new Dictionary<string, object?>
         {
-                new Npgsql.NpgsqlParameter("@IdUser", idUsuario),
-                new Npgsql.NpgsqlParameter("@IsBloqued", true)
-            };
+                {"@IdUser", idUsuario },
+                {"@IsBloqued", true }
+        };
 
         using var reader = await _postgresDbHelper.ExecuteReaderAsync(query, parameters);
         if (reader.Read())
@@ -154,12 +152,12 @@ public class AuthService
         var token = Guid.NewGuid().ToString();
         var expiryDate = DateTime.UtcNow.AddDays(7);
         var insertQuery = "INSERT INTO RefreshToken (Token, UserId, ExpiryDate, IsRevoked) VALUES (@token, @UserId, @ExpiryDate, @IsRevoked)";
-        var insertParams = new[]
+        var insertParams = new Dictionary<string, object?>
         {
-                new Npgsql.NpgsqlParameter("@Token", token),
-                new Npgsql.NpgsqlParameter("@userId", user.Login),
-                new Npgsql.NpgsqlParameter("@ExpiryDate", expiryDate),
-                new Npgsql.NpgsqlParameter("@IsRevoked", false)
+                {"@Token", token },
+                {"@userId", user.Login },
+                {"@ExpiryDate", expiryDate },
+                {"@IsRevoked", false }
             };
         await _postgresDbHelper.ExecuteCommandAsync(insertQuery, insertParams);
         return token;
@@ -168,10 +166,10 @@ public class AuthService
     public async void LogoutAsync(string token, Users user)
     {
         var updateQuery = "UPDATE RefreshToken set IsRevoked = @IsRevoked WHERE Token = @Token";
-        var insertParams = new[]
+        var insertParams = new Dictionary<string, object?>
         {
-                new Npgsql.NpgsqlParameter("@Token", token),
-                new Npgsql.NpgsqlParameter("@IsRevoked", true)
+                {"@Token", token },
+                {"@IsRevoked", true }
             };
         await _postgresDbHelper.ExecuteCommandAsync(updateQuery, insertParams);
         _logGeral.AddLogGeral(_utils.CreateLog($"Usuario {user.Login} deslogado do sistema.", "RefreshToken", 0));
@@ -182,9 +180,9 @@ public class AuthService
         try
         {
             var query = "SELECT Token, UserId, ExpiryDate, IsRevoked from Refreshtoken where Token = @Token";
-            var parameters = new[]
+            var parameters = new Dictionary<string, object?>
             {
-                new Npgsql.NpgsqlParameter("@Token", token)
+                {"@Token", token}
             };
             using var reader = await _postgresDbHelper.ExecuteReaderAsync(query, parameters);
             if (reader.Read())
@@ -208,11 +206,10 @@ public class AuthService
     public async Task<Users?> GetUserByUserNameAsync(string login)
     {
         var query = "SELECT Id, Email, Password, EmailVerified FROM Users WHERE Login = @Login";
-        var parameters = new[]
+        var parameters = new Dictionary<string, object?>
         {
-                new Npgsql.NpgsqlParameter("@Login", login)
-            };
-
+            {"@Login", login }
+        };
         using var reader = await _postgresDbHelper.ExecuteReaderAsync(query, parameters);
         if (reader.Read())
         {
@@ -231,9 +228,9 @@ public class AuthService
     public async Task<Users?> GetUserById(int id)
     {
         var query = "SELECT Id, Login, Email, Password, EmailVerified FROM Users WHERE Id = @Id";
-        var parameters = new[]
+        var parameters = new Dictionary<string, object?>
         {
-                new Npgsql.NpgsqlParameter("@Id", id)
+                {"@Id", id }
             };
 
         using var reader = await _postgresDbHelper.ExecuteReaderAsync(query, parameters);
@@ -253,9 +250,9 @@ public class AuthService
     public async Task<Users?> GetUserByEmail(string email)
     {
         var query = "SELECT Id, Login, Email, Password, EmailVerified FROM Users WHERE Email = @Email";
-        var parameters = new[]
+        var parameters = new Dictionary<string, object?>
         {
-                new Npgsql.NpgsqlParameter("@Email", email)
+                {"@Email", email }
             };
 
         using var reader = await _postgresDbHelper.ExecuteReaderAsync(query, parameters);
@@ -276,13 +273,13 @@ public class AuthService
     public async Task<bool> VerifyEmailAsync(string token)
     {
         var query = "SELECT COUNT(*) FROM Users WHERE EmailVerificationToken = @Token AND EmailVerified = 0";
-        var parameters = new[] { new Npgsql.NpgsqlParameter("@Token", token) };
+        var parameters = new Dictionary<string, object?> { { "@Token", token } };
 
         var result = await _postgresDbHelper.ExecuteReaderAsync(query, parameters);
         if (result.Read() && (int)result[0] > 0)
         {
             var updateQuery = "UPDATE Users SET EmailVerified = 1 WHERE EmailVerificationToken = @Token";
-            var updateParameters = new[] { new Npgsql.NpgsqlParameter("@Token", token) };
+            var updateParameters = new Dictionary<string, object?> { { "@Token", token } };
             await _postgresDbHelper.ExecuteCommandAsync(updateQuery, updateParameters);
             return true;
         }
@@ -294,7 +291,7 @@ public class AuthService
     {
         var retorno = new List<Role>();
         var query = " SELECT ur.IdRole, r.Descricao from Users_Role ur inner join Role r on(r.Id = ur.IdRole) where IdUser = @IdUser";
-        var parameters = new[] { new Npgsql.NpgsqlParameter("@IdUser", users.Id) };
+        var parameters = new Dictionary<string, object?> { { "@IdUser", users.Id } };
 
         using var reader = await _postgresDbHelper.ExecuteReaderAsync(query, parameters);
         while (reader.Read())
@@ -347,7 +344,7 @@ public class AuthService
     {
         var retorno = new List<Users>();
         var query = " SELECT Id, Email, Login, EmailVerified From Users where Login <> @Login";
-        var parameters = new[] { new Npgsql.NpgsqlParameter("@Login", login) };
+        var parameters = new Dictionary<string, object?> { { "@Login", login } };
 
         using var reader = await _postgresDbHelper.ExecuteReaderAsync(query, parameters);
         while (reader.Read())
@@ -376,10 +373,10 @@ public class AuthService
 
             user.Password = _utils.GerarHash(user.Password);
             var insertQuery = "UPDATE Users set Password = @Password where Login = @Login";
-            var insertParams = new[]
+            var insertParams = new Dictionary<string, object?>
             {
-                new Npgsql.NpgsqlParameter("@Password", user.Password),
-                new Npgsql.NpgsqlParameter("@Login", user.Login)
+                {"@Password", user.Password },
+                {"@Login", user.Login }
             };
 
             await _postgresDbHelper.ExecuteCommandAsync(insertQuery, insertParams);
@@ -407,12 +404,12 @@ public class AuthService
         var token = Guid.NewGuid().ToString();
         var expiryDate = DateTime.UtcNow.AddDays(1);
         var insertQuery = "INSERT INTO UsersRecovery (IdUser, VerificationToken, IsUsed, ExpiryDate) VALUES (@IdUser, @VerificationToken, @IsUsed, @ExpiryDate)";
-        var insertParams = new[]
+        var insertParams = new Dictionary<string, object?>
         {
-                new Npgsql.NpgsqlParameter("@IdUser", user!.Id),
-                new Npgsql.NpgsqlParameter("@VerificationToken", token),
-                new Npgsql.NpgsqlParameter("@IsUsed", false),
-                new Npgsql.NpgsqlParameter("@ExpiryDate", expiryDate)
+                {"@IdUser", user!.Id },
+                {"@VerificationToken", token },
+                {"@IsUsed", false },
+                {"@ExpiryDate", expiryDate }
             };
         await _postgresDbHelper.ExecuteCommandAsync(insertQuery, insertParams);
         _emailService.SendEmailAsync(user.Email, "Recuperação de senha", $"Uma requisição de recuperação de senha foi identificada. Pare confirmar o reset da senha acesse o link {host}/reset-password?token={token} .");
@@ -421,9 +418,9 @@ public class AuthService
     public async void ResetUserPassword(string token)
     {
         var query = "SELECT Id, IdUser,  IsUsed, ExpiryDate FROM UsersRecovery WHERE VerificationToken = @VerificationToken";
-        var parameters = new[]
+        var parameters = new Dictionary<string, object?>
         {
-                new Npgsql.NpgsqlParameter("@VerificationToken", token)
+                {"@VerificationToken", token }
             };
         using var reader = await _postgresDbHelper.ExecuteReaderAsync(query, parameters);
         if (reader.Read())
@@ -445,10 +442,10 @@ public class AuthService
 
             user.Password = _utils.GerarHash(user.Password);
             var insertQuery = "UPDATE Users set Password = @Password where Login = @Login";
-            var insertParams = new[]
+            var insertParams = new Dictionary<string, object?>
             {
-                    new Npgsql.NpgsqlParameter("@Password", user.Password),
-                    new Npgsql.NpgsqlParameter("@Login", user.Login)
+                    {"@Password", user.Password },
+                    {"@Login", user.Login }
                 };
 
             await _postgresDbHelper.ExecuteCommandAsync(insertQuery, insertParams);

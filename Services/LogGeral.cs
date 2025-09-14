@@ -15,11 +15,11 @@ public class LogGeralService : ILogGeral
         try
         {
             var insertQuery = "INSERT INTO LogGeral (message, table_name, data, IdUsuario) VALUES (@Message, @Table, GetDate(), @IdUsuario)";
-            var insertParams = new[]
+            var insertParams = new Dictionary<string, object?>
             {
-                    new SqlParameter("@Message", log.Message),
-                    new SqlParameter("@Table", log.Table),
-                    new SqlParameter("@IdUsuario", log.IdUsuario)
+                    {"@Message", log.Message},
+                    {"@Table", log.Table},
+                    {"@IdUsuario", log.IdUsuario}
                 };
             var _ = _dbHelper.ExecuteCommandAsync(insertQuery, insertParams);
         }
